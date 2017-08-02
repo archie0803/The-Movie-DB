@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,9 +23,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.provider.MediaStore.Video.VideoColumns.CATEGORY;
+import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.CATEGORY_A;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -146,6 +162,16 @@ public class MainActivity extends AppCompatActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        public static final String BASE_URL = "https://api.themoviedb.org";
+        public static int PAGE = 1;
+        public static String API_KEY = "e8fe74f0b4809fbdaad3e84e16b29559";
+        public static String LANGUAGE = "en-US";
+        public static String CATEGORY_A = "popular";
+        public static String CATEGORY_B = "top_rated";
+        ArrayList<Movie.Results> MoviesList;
+        RecyclerView mRecyclerView;
+        RecyclerAdapter mRecyclerAdapter;
+
         public PlaceholderFragment() {
         }
 
@@ -164,9 +190,88 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            int section = getArguments().getInt(ARG_SECTION_NUMBER);
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            if (section == 1) {
+                MoviesList = new ArrayList<>();
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+                mRecyclerView.setAdapter(mRecyclerAdapter);
+
+                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+                Call<Movie> call = apiInterface.MoviesList(CATEGORY_A, API_KEY, LANGUAGE, PAGE);
+                Log.i("TAG", "Call created");
+
+                call.enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(Call<Movie> call, Response<Movie> response) {
+
+                        if (response.isSuccessful())
+                            Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
+                        Movie results = response.body();
+                        MoviesList.clear();
+                        if(results.getResults() != null){
+                            MoviesList.addAll(results.getResults());
+                            mRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Movie> call, Throwable t) {
+
+                        Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
+                    }
+                });
+                return rootView;
+            } else if (section == 2) {
+//                TextView textView = rootView.findViewById(R.id.section_label);
+//                textView.setText(getString(R.string.section_format, section));
+                MoviesList = new ArrayList<>();
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+                mRecyclerView.setAdapter(mRecyclerAdapter);
+
+                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+                Call<Movie> call = apiInterface.MoviesList(CATEGORY_B, API_KEY, LANGUAGE, PAGE);
+                Log.i("TAG", "Call created");
+
+                call.enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(Call<Movie> call, Response<Movie> response) {
+
+                        if (response.isSuccessful())
+                            Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
+                        Movie results = response.body();
+                        MoviesList.clear();
+                        if(results.getResults() != null){
+                            MoviesList.addAll(results.getResults());
+                            mRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Movie> call, Throwable t) {
+
+                        Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
+                    }
+                });
+                return rootView;
+            } else if (section == 3) {
+                MoviesList = new ArrayList<>();
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+                mRecyclerView.setAdapter(mRecyclerAdapter);
+//                TextView textView = rootView.findViewById(R.id.section_label);
+//                textView.setText(getString(R.string.section_format, section));
+                return rootView;
+            }
+
             return rootView;
         }
     }
@@ -198,9 +303,9 @@ public class MainActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Popular";
                 case 1:
-                    return "SECTION 2";
+                    return "MOST RATED";
                 case 2:
                     return "SECTION 3";
             }
