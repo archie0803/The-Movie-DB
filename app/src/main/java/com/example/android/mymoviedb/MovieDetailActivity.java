@@ -10,10 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebSettings;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.key;
+import static android.media.CamcorderProfile.get;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.API_KEY;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
 
@@ -35,8 +40,16 @@ public class MovieDetailActivity extends AppCompatActivity {
     WebView displayTrailer;
     ImageView backdropImageView;
     ArrayList<CastAndCrew.Cast> castArrayList;
+    ArrayList<Review.ReviewResult> reviewArrayList;
+    ArrayList<Trailer.TrailerResult> trailerArrayList;
+    ArrayList<String> trailerNameList;
     CastAdapter mCastAdapter;
-    RecyclerView mCastView;
+    ReviewAdapter mReviewAdapter;
+    RecyclerView mCastView, mReviewRecyclerView;
+    ListView mTrailerView;
+    ArrayAdapter<String> mTrailerAdapter;
+    RetrofitHelper retrofitHelper;
+    ApiInterface apiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +74,11 @@ public class MovieDetailActivity extends AppCompatActivity {
         String backdropPath = i.getStringExtra(IntentConstants.BACKDROP_PATH);
         String releaseDate = i.getStringExtra(IntentConstants.RELEASE_DATE);
         double rating = i.getDoubleExtra(IntentConstants.VOTE_AVERAGE, -1);
-        boolean isTrailer = i.getBooleanExtra(IntentConstants.IS_TRAILER, false);
 
         setTitle(title);
 
-        setCast(movieId);
-
+        retrofitHelper = new RetrofitHelper(BASE_URL);
+        apiInterface = retrofitHelper.getAPI();
 
         releaseDateTextView = (TextView) findViewById(R.id.release_date_textView);
         overviewTextView = (TextView) findViewById(R.id.overview_textView);
@@ -74,6 +86,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         genreTextView = (TextView) findViewById(R.id.genre_textView);
         ratingTextView = (TextView) findViewById(R.id.rating_textView);
         mCastView = (RecyclerView) findViewById(R.id.cast_recycler_view);
+        mReviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
+        mTrailerView = (ListView) findViewById(R.id.trailer_list_view);
+        displayTrailer = (WebView) findViewById(R.id.trailer_view);
+
         releaseDateTextView.append(": " + releaseDate);
         overviewTextView.append(overview);
         ratingTextView.append(": " + rating + "/10");
@@ -83,39 +99,59 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .load("https://image.tmdb.org/t/p/w500" + backdropPath).fit()
                 .into(backdropImageView);
 
-        /*
-        if (isTrailer) {
+        setCast(movieId);
 
-            String frameVideo = "<iframe width=\"854\" height=\"480\" src=\"https://www.youtube.com/embed/2_SE2gQwXoo\" frameborder=\"0\" allowfullscreen></iframe>";
+        setTrailer(movieId);
 
-            displayTrailer = (WebView) findViewById(R.id.trailer_view);
-            displayTrailer.setVisibility(View.VISIBLE);
-            displayTrailer.setWebViewClient(new WebViewClient());
-            displayTrailer.getSettings().setLoadWithOverviewMode(true);
-            displayTrailer.getSettings().setUseWideViewPort(true);
-            WebSettings webSettings = displayTrailer.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            displayTrailer.getSettings().setJavaScriptEnabled(true);
-            displayTrailer.getSettings().setPluginsEnabled(true);
-            final String mimeType = "text/html";
-            final String encoding = "UTF-8";
-            //displayTrailer.loadData(frameVideo, mimeType, encoding);
-            displayTrailer.setWebChromeClient(new WebChromeClient() {});
-            String html = getHTML();
-            displayTrailer.loadDataWithBaseURL("", html, mimeType, encoding, "");
-        }
+        setReviews(movieId);
 
-
-        }
-        */
-
+        mTrailerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                String nextKey = trailerArrayList.get(pos).getKey();
+                getHTML(nextKey);
+            }
+        });
 
     }
 
+    private void setReviews(int movieId) {
+
+        reviewArrayList = new ArrayList<>();
+        mReviewAdapter = new ReviewAdapter(MovieDetailActivity.this, reviewArrayList);
+
+        Call<Review> call = apiInterface.getReviews(movieId, API_KEY);
+        Log.i("TAG", "Call created");
+        call.enqueue(new Callback<Review>() {
+            @Override
+            public void onResponse(Call<Review> call, Response<Review> response) {
+
+                if (response.isSuccessful()) {
+                    Log.d("TAG", "SET REVIEW2");
+                    Toast.makeText(MovieDetailActivity.this, "Success with Review", Toast.LENGTH_SHORT).show();
+                    Review results = response.body();
+                    reviewArrayList.clear();
+                    reviewArrayList.addAll(results.getResults());
+                    mReviewAdapter.notifyDataSetChanged();
+                    mReviewRecyclerView.setAdapter(mReviewAdapter);
+                    mReviewRecyclerView.setLayoutManager(new LinearLayoutManager(MovieDetailActivity.this));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Review> call, Throwable t) {
+                Log.d("TAG", "SET REVIEW3");
+                Toast.makeText(MovieDetailActivity.this, "Couldn't load reviews", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+
     public void setCast(int movieId) {
 
-        RetrofitHelper retrofitHelper = new RetrofitHelper(BASE_URL);
-        ApiInterface apiInterface = retrofitHelper.getAPI();
+
         Log.d("TAG", "SET CAST1");
 
         castArrayList = new ArrayList<>();
@@ -151,12 +187,69 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     }
 
-    public String getHTML() {
-        String html = "<iframe class=\"youtube-player\" style=\"border: 0; width: 100%; height: 95%; padding:0px; margin:0px\"" +
+    private void setTrailer(int movieId) {
+
+        trailerArrayList = new ArrayList<>();
+        trailerNameList = new ArrayList<>();
+        mTrailerAdapter = new ArrayAdapter<>(MovieDetailActivity.this, android.R.layout.simple_list_item_1, trailerNameList);
+        mTrailerView.setAdapter(mTrailerAdapter);
+
+        Call<Trailer> call = apiInterface.getTrailers(movieId, API_KEY);
+        Log.i("TAG", "Call created");
+        call.enqueue(new Callback<Trailer>() {
+            @Override
+            public void onResponse(Call<Trailer> call, Response<Trailer> response) {
+
+                if (response.isSuccessful()) {
+                    Log.d("TAG", "SET TRAILER2");
+                    Toast.makeText(MovieDetailActivity.this, "Success with Trailer", Toast.LENGTH_SHORT).show();
+                    Trailer results = response.body();
+                    trailerArrayList.clear();
+                    trailerArrayList.addAll(results.getResults());
+
+                    String key = trailerArrayList.get(0).getKey();
+                    //displayTrailer.setVisibility(View.VISIBLE);
+                    displayTrailer.setWebViewClient(new WebViewClient());
+                    displayTrailer.getSettings().setLoadWithOverviewMode(true);
+                    displayTrailer.getSettings().setUseWideViewPort(true);
+                    displayTrailer.getSettings().setJavaScriptEnabled(true);
+                    //displayTrailer.getSettings().setPluginsEnabled(true);
+                    displayTrailer.setWebChromeClient(new WebChromeClient() {
+                    });
+                    getHTML(key);
+
+                    for(int i = 0; i<trailerArrayList.size(); i++) {
+                        String name = trailerArrayList.get(i).getName();
+                        trailerNameList.add(name);
+                        mTrailerAdapter.notifyDataSetChanged();
+
+                    }
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<Trailer> call, Throwable t) {
+                Log.d("TAG", "SET TRAILER3");
+                Toast.makeText(MovieDetailActivity.this, "Couldn't load Trailer", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+
+    }
+
+    public void getHTML(String key) {
+        String html = "<iframe class=\"youtube-player\" style=\"border: 0; width=\"854\" height=\"480\" padding:0px; margin:0px\"" +
                 " id=\"ytplayer\" type=\"text/html\" src=\"http://www.youtube.com/embed/"
-                + "J2fB5XWj6IE"
+                + key
                 + "?fs=0\" frameborder=\"0\">\n"
                 + "</iframe>\n";
-        return html;
+
+        final String mimeType = "text/html";
+        final String encoding = "UTF-8";
+        displayTrailer.loadDataWithBaseURL("", html, mimeType, encoding, "");
+
     }
 }

@@ -21,7 +21,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     Context mContext;
     ArrayList<CastAndCrew.Cast> mCastList;
-    int pos;
 
     public CastAdapter(Context context, ArrayList<CastAndCrew.Cast> castList) {
         mContext = context;
@@ -36,7 +35,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     @Override
     public void onBindViewHolder(CastViewHolder holder, int position) {
-        pos = position;
 
         CastAndCrew.Cast c = mCastList.get(position);
         holder.castNameTextView.setText(c.getName());
