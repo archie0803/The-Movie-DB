@@ -28,21 +28,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.R.attr.key;
-import static android.media.CamcorderProfile.get;
+import static android.graphics.Color.YELLOW;
+import static android.os.Build.VERSION_CODES.M;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.API_KEY;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
 
 
 public class MovieDetailActivity extends AppCompatActivity {
 
-    TextView genreTextView, ratingTextView, releaseDateTextView, overviewTextView;
+    TextView runtimeTextView, genreTextView, ratingTextView, releaseDateTextView, overviewTextView;
     WebView displayTrailer;
     ImageView backdropImageView;
     ArrayList<CastAndCrew.Cast> castArrayList;
     ArrayList<Review.ReviewResult> reviewArrayList;
     ArrayList<Trailer.TrailerResult> trailerArrayList;
     ArrayList<String> trailerNameList;
+    ArrayList<Movie.Results.Genre> genreList;
     CastAdapter mCastAdapter;
     ReviewAdapter mReviewAdapter;
     RecyclerView mCastView, mReviewRecyclerView;
@@ -50,6 +51,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     ArrayAdapter<String> mTrailerAdapter;
     RetrofitHelper retrofitHelper;
     ApiInterface apiInterface;
+    Movie.Results res;
+    AddFavOpenHelper addFav;
+    int movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,46 +62,104 @@ public class MovieDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_to_fav);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Added to favourite", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        Intent i = getIntent();
-        int movieId = i.getIntExtra(IntentConstants.MOVIE_ID, -1);
-        String overview = i.getStringExtra(IntentConstants.MOVIE_OVERVIEW);
-        String title = i.getStringExtra(IntentConstants.MOVIE_TITLE);
-        String backdropPath = i.getStringExtra(IntentConstants.BACKDROP_PATH);
-        String releaseDate = i.getStringExtra(IntentConstants.RELEASE_DATE);
-        double rating = i.getDoubleExtra(IntentConstants.VOTE_AVERAGE, -1);
-
-        setTitle(title);
-
-        retrofitHelper = new RetrofitHelper(BASE_URL);
-        apiInterface = retrofitHelper.getAPI();
-
-        releaseDateTextView = (TextView) findViewById(R.id.release_date_textView);
-        overviewTextView = (TextView) findViewById(R.id.overview_textView);
+        runtimeTextView = (TextView) findViewById(R.id.runtime_text_view);
+        releaseDateTextView = (TextView) findViewById(R.id.release_date_text_view);
+        overviewTextView = (TextView) findViewById(R.id.overview_text_view);
         backdropImageView = (ImageView) findViewById(R.id.backdrop_image);
-        genreTextView = (TextView) findViewById(R.id.genre_textView);
-        ratingTextView = (TextView) findViewById(R.id.rating_textView);
+        genreTextView = (TextView) findViewById(R.id.genre_text_view);
+        ratingTextView = (TextView) findViewById(R.id.rating_text_view);
         mCastView = (RecyclerView) findViewById(R.id.cast_recycler_view);
         mReviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
         mTrailerView = (ListView) findViewById(R.id.trailer_list_view);
         displayTrailer = (WebView) findViewById(R.id.trailer_view);
 
-        releaseDateTextView.append(": " + releaseDate);
-        overviewTextView.append(overview);
-        ratingTextView.append(": " + rating + "/10");
+        Intent i = getIntent();
+        movieId = i.getIntExtra(IntentConstants.MOVIE_ID, -1);
+        String title = i.getStringExtra(IntentConstants.MOVIE_TITLE);
+        setTitle(title);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_to_fav);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addFav = new AddFavOpenHelper(MovieDetailActivity.this);
+                if (addFav.isFavourite(movieId + "")) {
+                    Snackbar.make(view, "Already in Favourites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    addFav.addToFavourites(movieId + "");
+                    Snackbar.make(view, "Added to Favourites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+
+            }
+        });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (addFav.isFavourite(movieId + "")) {
+                    addFav.removeFromFavourites(movieId + "");
+                    Snackbar.make(view, "Removed from Favourites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    Snackbar.make(view, "Not in Favourites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+                return true;
+            }
+        });
 
 
-        Picasso.with(MovieDetailActivity.this)
-                .load("https://image.tmdb.org/t/p/w500" + backdropPath).fit()
-                .into(backdropImageView);
+        retrofitHelper = new RetrofitHelper(BASE_URL);
+        apiInterface = retrofitHelper.getAPI();
+        genreList = new ArrayList<>();
+
+
+        Call<Movie.Results> call = apiInterface.getMovieDetails(movieId, API_KEY);
+        Log.i("TAG", "Call created");
+        call.enqueue(new Callback<Movie.Results>() {
+            @Override
+            public void onResponse(Call<Movie.Results> call, Response<Movie.Results> response) {
+
+                if (response.isSuccessful()) {
+                    Log.d("TAG", "SET REVIEW2");
+                    Toast.makeText(MovieDetailActivity.this, "Success with Review", Toast.LENGTH_SHORT).show();
+                    Movie.Results result = response.body();
+                    res = result;
+                    genreList = new ArrayList<>();
+                    genreList.clear();
+                    genreList.addAll(result.getGenres());
+
+                    String genre = "";
+                    if (genreList.size() - 1 > 0) {
+                        for (int j = 0; j < genreList.size() - 1; j++) {
+                            genre += genreList.get(j).getName() + ", ";
+                        }
+                        genre += genreList.get(genreList.size() - 1).getName();
+                    } else {
+                        genre += genreList.get(genreList.size() - 1).getName();
+                    }
+
+                    genreTextView.append(genre);
+                    releaseDateTextView.append(res.getReleaseDate());
+                    overviewTextView.append(res.getOverview());
+                    ratingTextView.append(res.getVoteAverage() + "/10");
+                    runtimeTextView.append(res.getRuntime() + " mins");
+                    Picasso.with(MovieDetailActivity.this)
+                            .load("https://image.tmdb.org/t/p/w500" + res.getBackdropPath()).fit()
+                            .into(backdropImageView);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Movie.Results> call, Throwable t) {
+                Log.d("TAG", "SET DETAILS3");
+                Toast.makeText(MovieDetailActivity.this, "Couldn't load reviews", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
 
         setCast(movieId);
 
@@ -105,7 +167,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         setReviews(movieId);
 
-        mTrailerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mTrailerView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+
+        {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
                 String nextKey = trailerArrayList.get(pos).getKey();
@@ -150,7 +214,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
 
     public void setCast(int movieId) {
-
 
         Log.d("TAG", "SET CAST1");
 
@@ -218,15 +281,14 @@ public class MovieDetailActivity extends AppCompatActivity {
                     });
                     getHTML(key);
 
-                    for(int i = 0; i<trailerArrayList.size(); i++) {
+                    for (int i = 0; i < trailerArrayList.size(); i++) {
                         String name = trailerArrayList.get(i).getName();
                         trailerNameList.add(name);
                         mTrailerAdapter.notifyDataSetChanged();
-
                     }
+                    mTrailerView.setAdapter(mTrailerAdapter);
                 }
             }
-
 
             @Override
             public void onFailure(Call<Trailer> call, Throwable t) {
@@ -235,20 +297,18 @@ public class MovieDetailActivity extends AppCompatActivity {
 
             }
         });
-
-
-
     }
 
     public void getHTML(String key) {
         String html = "<iframe class=\"youtube-player\" style=\"border: 0; width=\"854\" height=\"480\" padding:0px; margin:0px\"" +
-                " id=\"ytplayer\" type=\"text/html\" src=\"http://www.youtube.com/embed/"
+                " id=\"ytplayer\" type=\"text/html\" src=\"https://www.youtube.com/embed/"
                 + key
-                + "?fs=0\" frameborder=\"0\">\n"
+                + "\" frameborder=\"0\">\n"
                 + "</iframe>\n";
 
         final String mimeType = "text/html";
         final String encoding = "UTF-8";
+        displayTrailer.loadData(html, mimeType, encoding);
         displayTrailer.loadDataWithBaseURL("", html, mimeType, encoding, "");
 
     }

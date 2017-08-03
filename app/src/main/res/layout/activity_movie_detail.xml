@@ -28,8 +28,7 @@
                 android:layout_height="350dp"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
-                android:id="@+id/backdrop_image"
-                android:foregroundTint="@color/colorAccent"/>
+                android:id="@+id/backdrop_image"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -50,6 +49,6 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/add_to_fav" />
 
 </android.support.design.widget.CoordinatorLayout>

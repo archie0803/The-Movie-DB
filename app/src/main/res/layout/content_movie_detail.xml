@@ -14,47 +14,63 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/rating_textView"
+            android:id="@+id/runtime_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Rating"
+            android:layout_marginTop="24dp"
+            android:text="Runtime: "
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/release_date_textView"
+            android:id="@+id/rating_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="24dp"
+            android:text="Rating: "
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintHorizontal_bias="0.97"
+            app:layout_constraintLeft_toRightOf="@+id/runtime_text_view"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/runtime_text_view"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/release_date_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Release Date"
+            android:text="Release Date: "
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rating_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/runtime_text_view" />
 
         <TextView
-            android:id="@+id/genre_textView"
+            android:id="@+id/genre_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Genre"
+            android:text="Genre: "
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/release_date_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/release_date_text_view" />
 
         <TextView
-            android:id="@+id/overview_textView"
+            android:id="@+id/overview_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -66,7 +82,7 @@
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/genre_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/genre_text_view" />
 
         <TextView
             android:id="@+id/cast"
@@ -82,7 +98,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/overview_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/overview_text_view" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/cast_recycler_view"
@@ -96,25 +112,27 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cast" />
+            app:layout_constraintTop_toBottomOf="@+id/cast" />
 
         <WebView
             android:id="@+id/trailer_view"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="500dp"
             android:layout_centerHorizontal="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cast_recycler_view" />
+            app:layout_constraintTop_toBottomOf="@+id/cast_recycler_view"
+            android:layout_marginTop="18dp"
+            app:layout_constraintHorizontal_bias="0.0" />
 
         <ListView
             android:id="@+id/trailer_list_view"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/trailer_view" />
+            app:layout_constraintTop_toBottomOf="@+id/trailer_view" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/review_recycler_view"
@@ -123,7 +141,7 @@
             android:layout_centerHorizontal="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/trailer_list_view" />
+            app:layout_constraintTop_toBottomOf="@+id/trailer_list_view" />
 
 
     </android.support.constraint.ConstraintLayout>

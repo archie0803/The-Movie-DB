@@ -1,36 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--<group android:checkableBehavior="single">-->
+    <!--<item-->
+    <!--android:id="@+id/nav_camera"-->
+    <!--android:icon="@drawable/ic_menu_camera"-->
+    <!--android:title="Import" />-->
+    <!--<item-->
+    <!--android:id="@+id/nav_gallery"-->
+    <!--android:icon="@drawable/ic_menu_gallery"-->
+    <!--android:title="Gallery" />-->
+    <!--<item-->
+    <!--android:id="@+id/nav_slideshow"-->
+    <!--android:icon="@drawable/ic_menu_slideshow"-->
+    <!--android:title="Slideshow" />-->
+    <!--<item-->
+    <!--android:id="@+id/nav_manage"-->
+    <!--android:icon="@drawable/ic_menu_manage"-->
+    <!--android:title="Tools" />-->
+    <!--</group>-->
+
+    <!--<item android:title="Communicate">-->
+    <!--<menu>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_share"-->
+    <!--android:icon="@drawable/ic_menu_share"-->
+    <!--android:title="Share" />-->
+    <!--<item-->
+    <!--android:id="@+id/nav_send"-->
+    <!--android:icon="@drawable/ic_menu_send"-->
+    <!--android:title="Send" />-->
+    <!--</menu>-->
+    <!--</item>-->
+
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+        <item android:title="Search by">
+            <menu>
+                <item
+                    android:id="@+id/name_of_movie"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Movie" />
+                <item
+                    android:id="@+id/name_of_cast"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Cast" />
+                <item
+                    android:id="@+id/name_of_genre"
+                    android:icon="@drawable/ic_menu_manage"
+                    android:title="Genre" />
+                <item
+                    android:id="@+id/name_of_keyword"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="Keyword" />
+
+            </menu>
+        </item>
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Personal">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/fav"
+                android:icon="@drawable/add_to_fav"
+                android:title="Favourites" />
         </menu>
     </item>
-
 </menu>

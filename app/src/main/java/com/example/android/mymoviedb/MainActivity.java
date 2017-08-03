@@ -34,6 +34,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.R.attr.category;
 import static android.R.attr.id;
 import static android.provider.MediaStore.Video.VideoColumns.CATEGORY;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.CATEGORY_A;
@@ -135,18 +136,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.name_of_cast) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.name_of_genre) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.name_of_keyword) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.name_of_movie) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.fav) {
+            Intent i = new Intent(MainActivity.this, FavouritesActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -174,6 +174,8 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Movie.Results> MoviesList;
         RecyclerView mRecyclerView;
         RecyclerAdapter mRecyclerAdapter;
+        RetrofitHelper retrofitHelper;
+        ApiInterface apiInterface;
 
         public PlaceholderFragment() {
         }
@@ -199,108 +201,59 @@ public class MainActivity extends AppCompatActivity
             mRecyclerView = rootView.findViewById(R.id.recycler_view);
             mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-            RetrofitHelper retrofitHelper = new RetrofitHelper(BASE_URL);
-            ApiInterface apiInterface = retrofitHelper.getAPI();
+            retrofitHelper = new RetrofitHelper(BASE_URL);
+            apiInterface = retrofitHelper.getAPI();
 
             if (section == 1) {
                 MoviesList = new ArrayList<>();
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-
-                Call<Movie> call = apiInterface.MoviesList(CATEGORY_A, API_KEY, LANGUAGE, PAGE);
-                Log.i("TAG", "Call created");
-
-                call.enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-
-                        if (response.isSuccessful())
-                            Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
-                        Movie results = response.body();
-
-                        MoviesList.clear();
-                        if (results.getResults() != null) {
-                            MoviesList.addAll(results.getResults());
-                            mRecyclerAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-
-                        Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
-                    }
-                });
+                getMovies(CATEGORY_A);
                 return rootView;
             } else if (section == 2) {
-
                 MoviesList = new ArrayList<>();
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-
-                Call<Movie> call = apiInterface.MoviesList(CATEGORY_B, API_KEY, LANGUAGE, PAGE);
-                Log.i("TAG", "Call created");
-
-                call.enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-
-                        if (response.isSuccessful())
-                            Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
-                        Movie results = response.body();
-                        MoviesList.clear();
-                        if (results.getResults() != null) {
-                            MoviesList.addAll(results.getResults());
-                            mRecyclerAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-
-                        Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
-                    }
-                });
-
+                getMovies(CATEGORY_B);
                 return rootView;
             } else if (section == 3) {
-
                 MoviesList = new ArrayList<>();
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-
-//                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
-//                        .build();
-//                ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-
-                Call<Movie> call = apiInterface.MoviesList(CATEGORY_C, API_KEY, LANGUAGE, PAGE);
-                Log.i("TAG", "Call created");
-
-                call.enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-
-                        if (response.isSuccessful())
-                            Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
-                        Movie results = response.body();
-                        MoviesList.clear();
-                        if (results.getResults() != null) {
-                            MoviesList.addAll(results.getResults());
-                            mRecyclerAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-
-                        Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
-                    }
-                });
-
+                getMovies(CATEGORY_C);
                 return rootView;
             }
 
             return rootView;
+        }
+
+        private void getMovies(String category) {
+
+            Call<Movie> call = apiInterface.MoviesList(category, API_KEY, LANGUAGE, PAGE);
+            Log.i("TAG", "Call created");
+
+            call.enqueue(new Callback<Movie>() {
+                @Override
+                public void onResponse(Call<Movie> call, Response<Movie> response) {
+
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
+                        Movie results = response.body();
+                        MoviesList.clear();
+                        if (results.getResults() != null) {
+                            MoviesList.addAll(results.getResults());
+                            mRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Movie> call, Throwable t) {
+
+                    Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
+                }
+            });
+
         }
 
     }
