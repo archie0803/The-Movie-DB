@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 class Trailer {
     private int id;
-    private ArrayList<TrailerResult> results;
+    private ArrayList<TrailerResults> results;
 
     public int getId() {
         return id;
@@ -18,25 +18,42 @@ class Trailer {
         this.id = id;
     }
 
-    public ArrayList<TrailerResult> getResults() {
+    public ArrayList<TrailerResults> getResults() {
         return results;
     }
 
-    public void setResults(ArrayList<TrailerResult> results) {
+    public void setResults(ArrayList<TrailerResults> results) {
         this.results = results;
     }
 
-    public static class TrailerResult {
-        private int id;
+    public static class TrailerResults{
+        private String id;
         private String key;
         private String name;
+        private String site;
+        private String type;
 
-        public int getId() {
+        public String getSite() {
+            return site;
+        }
 
+        public void setSite(String site) {
+            this.site = site;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(String id) {
             this.id = id;
         }
 

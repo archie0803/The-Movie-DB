@@ -45,10 +45,6 @@
                     android:icon="@drawable/ic_menu_send"
                     android:title="Cast" />
                 <item
-                    android:id="@+id/name_of_genre"
-                    android:icon="@drawable/ic_menu_manage"
-                    android:title="Genre" />
-                <item
                     android:id="@+id/name_of_keyword"
                     android:icon="@drawable/ic_menu_gallery"
                     android:title="Keyword" />

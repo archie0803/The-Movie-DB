@@ -24,8 +24,9 @@
         <activity
             android:name=".MovieDetailActivity"
             android:label="@string/title_activity_movie_detail"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".FavouritesActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".FavouritesActivity" />
+        <activity android:name=".QueryActivity"></activity>
     </application>
 
 </manifest>

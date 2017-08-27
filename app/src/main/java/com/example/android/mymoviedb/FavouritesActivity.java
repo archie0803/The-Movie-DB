@@ -15,7 +15,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.R.attr.category;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.API_KEY;
+import static com.example.android.mymoviedb.IntentConstants.API_KEY;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
 import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.PAGE;
 import static java.security.AccessController.getContext;
@@ -33,6 +33,7 @@ public class FavouritesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Favourites");
         setContentView(R.layout.activity_favourites);
         favoriteMovies = new ArrayList<>();
         favoriteView = (RecyclerView) findViewById(R.id.fav_recycler_view);

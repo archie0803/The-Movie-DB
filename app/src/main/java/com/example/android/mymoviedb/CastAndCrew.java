@@ -10,6 +10,7 @@ public class CastAndCrew {
 
     private int id;
     private ArrayList<Cast> cast;
+    private ArrayList<Crew> crew;
 
     public int getId() {
         return id;
@@ -26,6 +27,15 @@ public class CastAndCrew {
     public void setCast(ArrayList<Cast> cast) {
         this.cast = cast;
     }
+
+    public ArrayList<Crew> getCrew() {
+        return crew;
+    }
+
+    public void setCrew(ArrayList<Crew> crew) {
+        this.crew = crew;
+    }
+
 
     public static class Cast {
 

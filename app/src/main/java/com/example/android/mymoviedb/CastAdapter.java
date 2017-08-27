@@ -38,6 +38,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
         CastAndCrew.Cast c = mCastList.get(position);
         holder.castNameTextView.setText(c.getName());
+        holder.characterTextView.setText(c.getCharacter());
         Picasso.with(mContext)
                 .load("https://image.tmdb.org/t/p/w500" + c.getProfile_path()).fit()
                 .into(holder.castImageView);
@@ -50,13 +51,15 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
     public class CastViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView castImageView;
-        TextView castNameTextView;
+        public ImageView castImageView;
+        public TextView castNameTextView;
+        public TextView characterTextView;
 
         public CastViewHolder(View itemView) {
             super(itemView);
             castImageView = itemView.findViewById(R.id.cast_image_view);
             castNameTextView = itemView.findViewById(R.id.cast_name);
+            characterTextView = itemView.findViewById(R.id.character_name);
         }
 
     }

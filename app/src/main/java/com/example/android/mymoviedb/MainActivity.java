@@ -1,5 +1,6 @@
 package com.example.android.mymoviedb;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,10 +10,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,10 +24,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -31,13 +34,16 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-import static android.R.attr.category;
-import static android.R.attr.id;
-import static android.provider.MediaStore.Video.VideoColumns.CATEGORY;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.CATEGORY_A;
+import static com.example.android.mymoviedb.IntentConstants.API_KEY;
+
+import static com.example.android.mymoviedb.IntentConstants.CATEGORY_A;
+import static com.example.android.mymoviedb.IntentConstants.CATEGORY_B;
+import static com.example.android.mymoviedb.IntentConstants.CATEGORY_C;
+import static com.example.android.mymoviedb.IntentConstants.LANGUAGE;
+import static com.example.android.mymoviedb.IntentConstants.MOST_RATED_MOVIES_TYPE;
+import static com.example.android.mymoviedb.IntentConstants.NOW_SHOWING_MOVIES_TYPE;
+import static com.example.android.mymoviedb.IntentConstants.POPULAR_MOVIES_TYPE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -78,16 +84,6 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -108,27 +104,38 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.main, menu);
+//
+//        final MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+//        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+//        searchView.setQueryHint("Search Movies, People, Keywords");
+//
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+//                intent.putExtra(IntentConstants.QUERY, query);
+//                startActivity(intent);
+//                searchMenuItem.collapseActionView();
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
+//
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -137,12 +144,16 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.name_of_cast) {
-            // Handle the camera action
-        } else if (id == R.id.name_of_genre) {
+            String menu_id = "cast";
+            searchMovie(menu_id);
 
         } else if (id == R.id.name_of_keyword) {
+            String menu_id = "keyword";
+            searchMovie(menu_id);
 
         } else if (id == R.id.name_of_movie) {
+            String menu_id = "movie";
+            searchMovie(menu_id);
 
         } else if (id == R.id.fav) {
             Intent i = new Intent(MainActivity.this, FavouritesActivity.class);
@@ -152,6 +163,45 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void searchMovie(String menu_id) {
+        final String idMenu = menu_id;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Search");
+        builder.setMessage("Enter the movie to search");
+        builder.setCancelable(false);
+        View v = getLayoutInflater().inflate(R.layout.search_item_view, null);
+        builder.setView(v);
+        final EditText searchTerm = (EditText) v.findViewById(R.id.search_edit_text);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String query = searchTerm.getText().toString();
+                if (query.trim().isEmpty()) {
+                    return;
+                } else {
+                    String newquery = query.replace(" ", "+");
+                    sendQuery(idMenu, newquery);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void sendQuery(String id, String newQuery) {
+
+        Intent i = new Intent(MainActivity.this, QueryActivity.class);
+        i.putExtra(IntentConstants.MENU_ID, id);
+        i.putExtra(IntentConstants.QUERY_TERM, newQuery);
+        startActivity(i);
     }
 
     /**
@@ -166,16 +216,31 @@ public class MainActivity extends AppCompatActivity
 
         public static final String BASE_URL = "https://api.themoviedb.org/";
         public static int PAGE = 1;
-        public static String API_KEY = "e8fe74f0b4809fbdaad3e84e16b29559";
-        public static String LANGUAGE = "en-US";
-        public static String CATEGORY_A = "popular";
-        public static String CATEGORY_B = "top_rated";
-        public static String CATEGORY_C = "now_playing";
-        ArrayList<Movie.Results> MoviesList;
+        ArrayList<Movie.Results> PopularMoviesList = new ArrayList<>();
+        ArrayList<Movie.Results> NowPlayingMoviesList = new ArrayList<>();
+        ArrayList<Movie.Results> MostRatedMoviesList = new ArrayList<>();
         RecyclerView mRecyclerView;
-        RecyclerAdapter mRecyclerAdapter;
+        public RecyclerAdapter mRecyclerAdapter;
         RetrofitHelper retrofitHelper;
         ApiInterface apiInterface;
+
+        private int mMovieType;
+
+        Call<Movie> mPopularMoviesCall;
+        Call<Movie> mMostRatedMoviesCall;
+        Call<Movie> mNowPlayingMoviesCall;
+
+        private boolean pagesOver = false;
+        public int presentPage = 1;
+        private boolean loading = true;
+        private int previousTotal = 0;
+        private int visibleThreshold = 5;
+
+        boolean firstTime = true;
+        boolean secondTime = true;
+        boolean thirdTime = true;
+
+        GridLayoutManager gridLayoutManager;
 
         public PlaceholderFragment() {
         }
@@ -195,67 +260,202 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            int section = getArguments().getInt(ARG_SECTION_NUMBER);
-
+            final int section = getArguments().getInt(ARG_SECTION_NUMBER);
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             mRecyclerView = rootView.findViewById(R.id.recycler_view);
-            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-
+            gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
             retrofitHelper = new RetrofitHelper(BASE_URL);
             apiInterface = retrofitHelper.getAPI();
 
+
+
             if (section == 1) {
-                MoviesList = new ArrayList<>();
-                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+
+                loadMovies(section);
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), PopularMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-                getMovies(CATEGORY_A);
+                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        int visibleItemCount = gridLayoutManager.getChildCount();
+                        int totalItemCount = gridLayoutManager.getItemCount();
+                        int firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition();
+
+
+                        if (loading) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                            loadMovies(section);
+                            loading = true;
+                        }
+                    }
+                });
+                //loadMovies(section);
+
                 return rootView;
             } else if (section == 2) {
-                MoviesList = new ArrayList<>();
-                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+                //MostRatedMoviesList = new ArrayList<>();
+                loadMovies(section);
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), MostRatedMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-                getMovies(CATEGORY_B);
+                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        int visibleItemCount = gridLayoutManager.getChildCount();
+                        int totalItemCount = gridLayoutManager.getItemCount();
+                        int firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition();
+
+                        if (loading) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                            loadMovies(section);
+                            loading = true;
+                        }
+                    }
+                });
                 return rootView;
             } else if (section == 3) {
-                MoviesList = new ArrayList<>();
-                mRecyclerAdapter = new RecyclerAdapter(getContext(), MoviesList);
+                //NowPlayingMoviesList = new ArrayList<>();
+                loadMovies(section);
+                mRecyclerAdapter = new RecyclerAdapter(getContext(), NowPlayingMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
-                getMovies(CATEGORY_C);
-                return rootView;
+                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        int visibleItemCount = gridLayoutManager.getChildCount();
+                        int totalItemCount = gridLayoutManager.getItemCount();
+                        int firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition();
+
+                        if (loading) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                            loadMovies(section);
+                            loading = true;
+                        }
+                    }
+                });
             }
 
             return rootView;
         }
 
-        private void getMovies(String category) {
+        private void loadMovies(int movieType) {
 
-            Call<Movie> call = apiInterface.MoviesList(category, API_KEY, LANGUAGE, PAGE);
-            Log.i("TAG", "Call created");
+            if (pagesOver) return;
 
-            call.enqueue(new Callback<Movie>() {
-                @Override
-                public void onResponse(Call<Movie> call, Response<Movie> response) {
+            switch (movieType) {
 
-                    if (response.isSuccessful()) {
-                        Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
-                        Movie results = response.body();
-                        MoviesList.clear();
-                        if (results.getResults() != null) {
-                            MoviesList.addAll(results.getResults());
+                case POPULAR_MOVIES_TYPE:
+                    mPopularMoviesCall = apiInterface.MoviesList(CATEGORY_A, API_KEY, LANGUAGE, presentPage);
+                    mPopularMoviesCall.enqueue(new Callback<Movie>() {
+                        @Override
+                        public void onResponse(Call<Movie> call1, Response<Movie> response) {
+                            if (!response.isSuccessful()) {
+                                mPopularMoviesCall = call1.clone();
+                                mPopularMoviesCall.enqueue(this);
+                                return;
+                            }
+
+                            if (response.body() == null) return;
+                            if (response.body().getResults() == null) return;
+
+                            for (Movie.Results movieBrief : response.body().getResults()) {
+                                if (movieBrief != null && movieBrief.getTitle() != null && movieBrief.getPosterPath() != null)
+                                    PopularMoviesList.add(movieBrief);
+                            }
                             mRecyclerAdapter.notifyDataSetChanged();
+                            if (response.body().getPage() == response.body().getTotalPages())
+                                pagesOver = true;
+                            else
+                                presentPage++;
                         }
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<Movie> call, Throwable t) {
+                        @Override
+                        public void onFailure(Call<Movie> call, Throwable t) {
+                            Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_SHORT).show();
+                        }
 
-                    Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
-                }
-            });
+                    });
+                    break;
+                case MOST_RATED_MOVIES_TYPE:
+                    mMostRatedMoviesCall = apiInterface.MoviesList(CATEGORY_B, API_KEY, LANGUAGE, presentPage);
+                    mMostRatedMoviesCall.enqueue(new Callback<Movie>() {
+                        @Override
+                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+                            if (!response.isSuccessful()) {
+                                mMostRatedMoviesCall = call.clone();
+                                mMostRatedMoviesCall.enqueue(this);
+                                return;
+                            }
 
+                            if (response.body() == null) return;
+                            if (response.body().getResults() == null) return;
+
+                            for (Movie.Results movieBrief : response.body().getResults()) {
+                                if (movieBrief != null && movieBrief.getTitle() != null && movieBrief.getPosterPath() != null)
+                                    MostRatedMoviesList.add(movieBrief);
+                            }
+                            mRecyclerAdapter.notifyDataSetChanged();
+                            if (response.body().getPage() == response.body().getTotalPages())
+                                pagesOver = true;
+                            else
+                                presentPage++;
+                        }
+
+                        @Override
+                        public void onFailure(Call<Movie> call, Throwable t) {
+                            Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    break;
+
+                case NOW_SHOWING_MOVIES_TYPE:
+                    mNowPlayingMoviesCall = apiInterface.MoviesList(IntentConstants.CATEGORY_C, API_KEY, LANGUAGE, PAGE);
+                    Log.i("TAG", "Call created NP");
+                    mNowPlayingMoviesCall.enqueue(new Callback<Movie>() {
+                        @Override
+                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+                            if (!response.isSuccessful()) {
+                                mNowPlayingMoviesCall = call.clone();
+                                mNowPlayingMoviesCall.enqueue(this);
+                                return;
+                            }
+
+                            if (response.body() == null) return;
+                            if (response.body().getResults() == null) return;
+
+                            for (Movie.Results movieBrief : response.body().getResults()) {
+                                if (movieBrief != null && movieBrief.getTitle() != null && movieBrief.getPosterPath() != null)
+                                    NowPlayingMoviesList.add(movieBrief);
+                            }
+                            mRecyclerAdapter.notifyDataSetChanged();
+                            if (response.body().getPage() == response.body().getTotalPages())
+                                pagesOver = true;
+                            else
+                                presentPage++;
+                        }
+
+                        @Override
+                        public void onFailure(Call<Movie> call, Throwable t) {
+                            Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    break;
+            }
         }
-
     }
 
     /**
@@ -293,5 +493,7 @@ public class MainActivity extends AppCompatActivity
             }
             return null;
         }
+
+
     }
 }
