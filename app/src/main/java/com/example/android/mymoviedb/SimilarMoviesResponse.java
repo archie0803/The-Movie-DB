@@ -19,13 +19,6 @@ public class SimilarMoviesResponse {
     @SerializedName("total_results")
     private Integer totalResults;
 
-//    public SimilarMoviesResponse(Integer page, List<Movie> results, Integer totalPages, Integer totalResults) {
-//        this.page = page;
-//        this.results = results;
-//        this.totalPages = totalPages;
-//        this.totalResults = totalResults;
-//    }
-
     public Integer getPage() {
         return page;
     }

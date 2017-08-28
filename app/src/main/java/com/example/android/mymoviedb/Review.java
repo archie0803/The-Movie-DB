@@ -27,7 +27,7 @@ public class Review {
         this.results = results;
     }
 
-    public static class ReviewResult{
+    public static class ReviewResult {
         private String author;
         private String content;
 

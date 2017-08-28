@@ -1,7 +1,7 @@
 package com.example.android.mymoviedb;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +60,15 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
             castImageView = itemView.findViewById(R.id.cast_image_view);
             castNameTextView = itemView.findViewById(R.id.cast_name);
             characterTextView = itemView.findViewById(R.id.character_name);
+            castImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, PersonDetailActivity.class);
+                    intent.putExtra(IntentConstants.CAST_ID, mCastList.get(getAdapterPosition()).getId());
+                    intent.putExtra(IntentConstants.CAST_NAME, mCastList.get(getAdapterPosition()).getName());
+                    mContext.startActivity(intent);
+                }
+            });
         }
 
     }

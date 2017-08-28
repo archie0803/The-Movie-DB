@@ -269,7 +269,6 @@ public class MainActivity extends AppCompatActivity
             apiInterface = retrofitHelper.getAPI();
 
 
-
             if (section == 1) {
 
                 loadMovies(section);

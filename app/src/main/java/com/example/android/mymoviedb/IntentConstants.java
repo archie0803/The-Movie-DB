@@ -7,13 +7,7 @@ package com.example.android.mymoviedb;
 public class IntentConstants {
 
     public static final String MOVIE_TITLE = "title";
-    public static final String MOVIE_OVERVIEW = "overview";
-    public static final String POPULARITY = "popularity";
-    public static final String VOTE_AVERAGE = "vote average";
-    public static final String RELEASE_DATE = "release date";
     public static final String MOVIE_ID = "id";
-    public static final String BACKDROP_PATH = "backdrop path";
-    public static final String IS_TRAILER = "is trailer";
     public static final String MENU_ID = "menu id";
     public static final String QUERY_TERM = "query";
     public static final String YOUTUBE_PREFIX = "https://www.youtube.com/watch?v=";
@@ -25,4 +19,6 @@ public class IntentConstants {
     public static final int POPULAR_MOVIES_TYPE = 1;
     public static final int MOST_RATED_MOVIES_TYPE = 2;
     public static final int NOW_SHOWING_MOVIES_TYPE = 3;
+    public static final String CAST_ID = "cast_id";
+    public static final String CAST_NAME = "cast_name";
 }

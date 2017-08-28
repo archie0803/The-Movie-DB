@@ -26,7 +26,7 @@ class Trailer {
         this.results = results;
     }
 
-    public static class TrailerResults{
+    public static class TrailerResults {
         private String id;
         private String key;
         private String name;
