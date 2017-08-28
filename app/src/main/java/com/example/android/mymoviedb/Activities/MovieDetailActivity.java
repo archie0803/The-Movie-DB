@@ -1,55 +1,45 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.google.gson.annotations.SerializedName;
+import com.example.android.mymoviedb.Adapters.CastAdapter;
+import com.example.android.mymoviedb.Adapters.ReviewAdapter;
+import com.example.android.mymoviedb.Adapters.SimilarMoviesAdapter;
+import com.example.android.mymoviedb.Adapters.TrailerAdapter;
+import com.example.android.mymoviedb.AddFavOpenHelper;
+import com.example.android.mymoviedb.ApiInterface;
+import com.example.android.mymoviedb.Models.CastAndCrew;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.Models.Movie;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.RetrofitHelper;
+import com.example.android.mymoviedb.Models.Review;
+import com.example.android.mymoviedb.Models.SimilarMoviesResponse;
+import com.example.android.mymoviedb.Models.Trailer;
 import com.squareup.picasso.Picasso;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 import static com.example.android.mymoviedb.IntentConstants.API_KEY;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
-import static com.example.android.mymoviedb.R.id.imageView;
 
 
 public class MovieDetailActivity extends AppCompatActivity {
@@ -195,7 +185,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void loadActivity() {
 
-        retrofitHelper = new RetrofitHelper(BASE_URL);
+        retrofitHelper = new RetrofitHelper(MainActivity.PlaceholderFragment.BASE_URL);
         apiInterface = retrofitHelper.getAPI();
 
         mMovieDetailsCall = apiInterface.getMovieDetails(movieId, API_KEY);

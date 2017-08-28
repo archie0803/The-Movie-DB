@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Models;
 
 import java.util.ArrayList;
 

@@ -1,23 +1,18 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
+
+import com.example.android.mymoviedb.ApiInterface;
+import com.example.android.mymoviedb.Models.CastAndCrew;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.RetrofitHelper;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.example.android.mymoviedb.IntentConstants.MENU_ID;
 import static com.example.android.mymoviedb.IntentConstants.QUERY_TERM;
-import static com.example.android.mymoviedb.IntentConstants.API_KEY;
 
 public class QueryActivity extends AppCompatActivity {
 

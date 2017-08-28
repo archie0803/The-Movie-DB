@@ -1,9 +1,6 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -17,22 +14,25 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.example.android.mymoviedb.Adapters.PersonMovieAdapter;
+import com.example.android.mymoviedb.ApiInterface;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.Models.Person;
+import com.example.android.mymoviedb.Models.PersonMovie;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.RetrofitHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.android.mymoviedb.IntentConstants.API_KEY;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
 
 public class PersonDetailActivity extends AppCompatActivity {
 
@@ -95,7 +95,7 @@ public class PersonDetailActivity extends AppCompatActivity {
         mMovieCastRecyclerView.setAdapter(mPersonMovieAdapter);
         mMovieCastRecyclerView.setLayoutManager(new LinearLayoutManager(PersonDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
 
-        retrofitHelper = new RetrofitHelper(BASE_URL);
+        retrofitHelper = new RetrofitHelper(MainActivity.PlaceholderFragment.BASE_URL);
         apiInterface = retrofitHelper.getAPI();
 
         loadActivity();

@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.Models.Movie;
+import com.example.android.mymoviedb.Activities.MovieDetailActivity;
+import com.example.android.mymoviedb.R;
 
 import java.util.ArrayList;
 

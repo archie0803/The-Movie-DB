@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,12 +22,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MovieDetailActivity"
+            android:name=".Activities.MovieDetailActivity"
             android:label="@string/title_activity_movie_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FavouritesActivity" />
-        <activity android:name=".QueryActivity" />
-        <activity android:name=".PersonDetailActivity"></activity>
+        <activity android:name=".Activities.FavouritesActivity" />
+        <activity android:name=".Activities.QueryActivity" />
+        <activity android:name=".Activities.PersonDetailActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Models;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Archita on 03-08-2017.
  */
 
-class Trailer {
+public class Trailer {
     private int id;
     private ArrayList<TrailerResults> results;
 

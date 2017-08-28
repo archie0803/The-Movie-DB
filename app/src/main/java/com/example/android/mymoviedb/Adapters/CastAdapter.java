@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.mymoviedb.Models.CastAndCrew;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.Activities.PersonDetailActivity;
+import com.example.android.mymoviedb.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

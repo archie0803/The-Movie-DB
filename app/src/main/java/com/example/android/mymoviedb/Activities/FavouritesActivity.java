@@ -1,12 +1,18 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.android.mymoviedb.AddFavOpenHelper;
+import com.example.android.mymoviedb.ApiInterface;
+import com.example.android.mymoviedb.Models.Movie;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.Adapters.RecyclerAdapter;
+import com.example.android.mymoviedb.RetrofitHelper;
 
 import java.util.ArrayList;
 
@@ -14,11 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.R.attr.category;
 import static com.example.android.mymoviedb.IntentConstants.API_KEY;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.BASE_URL;
-import static com.example.android.mymoviedb.MainActivity.PlaceholderFragment.PAGE;
-import static java.security.AccessController.getContext;
 
 public class FavouritesActivity extends AppCompatActivity {
 
@@ -41,7 +43,7 @@ public class FavouritesActivity extends AppCompatActivity {
         allFavsId = new ArrayList<>();
         addFavOpenHelper = new AddFavOpenHelper(FavouritesActivity.this);
         allFavsId = addFavOpenHelper.getAllFavourites();
-        retrofitHelper = new RetrofitHelper(BASE_URL);
+        retrofitHelper = new RetrofitHelper(MainActivity.PlaceholderFragment.BASE_URL);
         apiInterface = retrofitHelper.getAPI();
         getFavouriteMovies(allFavsId);
 

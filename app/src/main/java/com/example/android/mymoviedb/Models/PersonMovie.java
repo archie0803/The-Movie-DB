@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Models;
 
 import com.google.gson.annotations.SerializedName;
 

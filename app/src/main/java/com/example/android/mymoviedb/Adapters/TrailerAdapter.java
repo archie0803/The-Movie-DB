@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,15 +13,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.youtube.player.YouTubeThumbnailView;
-import com.squareup.picasso.Picasso;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.Models.Trailer;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.R.attr.key;
 
 /**
  * Created by Archita on 04-08-2017.

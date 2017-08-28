@@ -1,4 +1,4 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Models;
 
 /**
  * Created by Archita on 27-08-2017.

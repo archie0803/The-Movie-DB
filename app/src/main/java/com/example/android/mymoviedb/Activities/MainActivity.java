@@ -1,10 +1,8 @@
-package com.example.android.mymoviedb;
+package com.example.android.mymoviedb.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,10 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -29,6 +25,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.android.mymoviedb.ApiInterface;
+import com.example.android.mymoviedb.IntentConstants;
+import com.example.android.mymoviedb.Models.Movie;
+import com.example.android.mymoviedb.R;
+import com.example.android.mymoviedb.Adapters.RecyclerAdapter;
+import com.example.android.mymoviedb.RetrofitHelper;
+
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -39,7 +42,6 @@ import static com.example.android.mymoviedb.IntentConstants.API_KEY;
 
 import static com.example.android.mymoviedb.IntentConstants.CATEGORY_A;
 import static com.example.android.mymoviedb.IntentConstants.CATEGORY_B;
-import static com.example.android.mymoviedb.IntentConstants.CATEGORY_C;
 import static com.example.android.mymoviedb.IntentConstants.LANGUAGE;
 import static com.example.android.mymoviedb.IntentConstants.MOST_RATED_MOVIES_TYPE;
 import static com.example.android.mymoviedb.IntentConstants.NOW_SHOWING_MOVIES_TYPE;
@@ -270,7 +272,6 @@ public class MainActivity extends AppCompatActivity
 
 
             if (section == 1) {
-
                 loadMovies(section);
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), PopularMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
@@ -298,7 +299,6 @@ public class MainActivity extends AppCompatActivity
 
                 return rootView;
             } else if (section == 2) {
-                //MostRatedMoviesList = new ArrayList<>();
                 loadMovies(section);
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), MostRatedMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);
@@ -323,7 +323,6 @@ public class MainActivity extends AppCompatActivity
                 });
                 return rootView;
             } else if (section == 3) {
-                //NowPlayingMoviesList = new ArrayList<>();
                 loadMovies(section);
                 mRecyclerAdapter = new RecyclerAdapter(getContext(), NowPlayingMoviesList);
                 mRecyclerView.setAdapter(mRecyclerAdapter);

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/tab_recycler"
     android:orientation="vertical"
-    tools:context="com.example.android.mymoviedb.MainActivity$PlaceholderFragment">
+    tools:context="com.example.android.mymoviedb.Activities.MainActivity$PlaceholderFragment">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
