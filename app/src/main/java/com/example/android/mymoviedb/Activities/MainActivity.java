@@ -11,8 +11,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,7 +41,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.android.mymoviedb.IntentConstants.API_KEY;
-
 import static com.example.android.mymoviedb.IntentConstants.CATEGORY_A;
 import static com.example.android.mymoviedb.IntentConstants.CATEGORY_B;
 import static com.example.android.mymoviedb.IntentConstants.LANGUAGE;
@@ -106,32 +107,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
-//
-//        final MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-//        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
-//        searchView.setQueryHint("Search Movies, People, Keywords");
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-//                intent.putExtra(IntentConstants.QUERY, query);
-//                startActivity(intent);
-//                searchMenuItem.collapseActionView();
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                return false;
-//            }
-//        });
-//
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        final MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        searchView.setQueryHint("Search Movies, People, Keywords");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                sendQuery("search", query);
+                searchMenuItem.collapseActionView();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -148,15 +147,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.name_of_cast) {
             String menu_id = "cast";
             searchMovie(menu_id);
-
-        } else if (id == R.id.name_of_keyword) {
-            String menu_id = "keyword";
-            searchMovie(menu_id);
-
         } else if (id == R.id.name_of_movie) {
             String menu_id = "movie";
             searchMovie(menu_id);
-
         } else if (id == R.id.fav) {
             Intent i = new Intent(MainActivity.this, FavouritesActivity.class);
             startActivity(i);
@@ -169,9 +162,10 @@ public class MainActivity extends AppCompatActivity
 
     private void searchMovie(String menu_id) {
         final String idMenu = menu_id;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Search");
-        builder.setMessage("Enter the movie to search");
+        builder.setMessage("Enter the " + menu_id + " to search");
         builder.setCancelable(false);
         View v = getLayoutInflater().inflate(R.layout.search_item_view, null);
         builder.setView(v);
@@ -183,8 +177,7 @@ public class MainActivity extends AppCompatActivity
                 if (query.trim().isEmpty()) {
                     return;
                 } else {
-                    String newquery = query.replace(" ", "+");
-                    sendQuery(idMenu, newquery);
+                    sendQuery(idMenu, query);
                 }
             }
         });
@@ -199,10 +192,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void sendQuery(String id, String newQuery) {
-
         Intent i = new Intent(MainActivity.this, QueryActivity.class);
         i.putExtra(IntentConstants.MENU_ID, id);
         i.putExtra(IntentConstants.QUERY_TERM, newQuery);
+        Log.i("TAG", "SEND QUERY");
         startActivity(i);
     }
 
@@ -226,8 +219,6 @@ public class MainActivity extends AppCompatActivity
         RetrofitHelper retrofitHelper;
         ApiInterface apiInterface;
 
-        private int mMovieType;
-
         Call<Movie> mPopularMoviesCall;
         Call<Movie> mMostRatedMoviesCall;
         Call<Movie> mNowPlayingMoviesCall;
@@ -237,10 +228,6 @@ public class MainActivity extends AppCompatActivity
         private boolean loading = true;
         private int previousTotal = 0;
         private int visibleThreshold = 5;
-
-        boolean firstTime = true;
-        boolean secondTime = true;
-        boolean thirdTime = true;
 
         GridLayoutManager gridLayoutManager;
 

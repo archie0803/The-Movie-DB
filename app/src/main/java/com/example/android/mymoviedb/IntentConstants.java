@@ -6,6 +6,8 @@ package com.example.android.mymoviedb;
 
 public class IntentConstants {
 
+
+    public static final String BASE_URL = "https://api.themoviedb.org/";
     public static final String MOVIE_TITLE = "title";
     public static final String MOVIE_ID = "id";
     public static final String MENU_ID = "menu id";

@@ -38,16 +38,12 @@
             <menu>
                 <item
                     android:id="@+id/name_of_movie"
-                    android:icon="@drawable/ic_menu_share"
+                    android:icon="@drawable/main_icon"
                     android:title="Movie" />
                 <item
                     android:id="@+id/name_of_cast"
-                    android:icon="@drawable/ic_menu_send"
+                    android:icon="@drawable/cast"
                     android:title="Cast" />
-                <item
-                    android:id="@+id/name_of_keyword"
-                    android:icon="@drawable/ic_menu_gallery"
-                    android:title="Keyword" />
 
             </menu>
         </item>
